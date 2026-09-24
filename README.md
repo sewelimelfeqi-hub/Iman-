@@ -1,33 +1,18 @@
-name: Build APK
+# تطبيق الإيمان - بناء الـ APK على GitHub
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+## الخطوات
+1. أنشئ حساباً على github.com إن لم يكن لديك.
+2. اضغط **New repository**، سمِّه `iman`، واختر **Private**، ثم **Create repository**.
+3. فك ضغط هذا الملف، ثم في صفحة المستودع اختر **Add file > Upload files** واسحب **محتويات** المجلد كلها (وليس المجلد نفسه)، ومنها مجلد `.github` ثم اضغط **Commit changes**.
+   - إن لم يُرفع مجلد `.github`: اختر **Add file > Create new file**، اكتب في الاسم `.github/workflows/build-apk.yml` والصق محتوى الملف نفسه، ثم Commit.
+4. افتح تبويب **Actions**. سيبدأ التشغيل **Build APK** تلقائياً ويستغرق 3 إلى 6 دقائق. إن لم يبدأ اضغط **Run workflow**.
+5. بعد ظهور العلامة الخضراء افتح التشغيل، وفي أسفل الصفحة **Artifacts** نزّل `iman-apk` (ملف zip) وفك منه `app-debug.apk`.
+6. انقل الملف إلى الموبايل وثبّته، واسمح بالتثبيت من مصدر غير معروف عند الطلب.
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+## تعديل الصفحة لاحقاً
+الصفحة كلها في `app/src/main/assets/index.html`. عدّل الملف في جيت هاب واعمل Commit، فيُبنى APK جديد تلقائياً.
 
-      - name: Unzip project
-        run: unzip -o ./*.zip -d project
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.9"
-
-      - name: Build debug APK
-        working-directory: project
-        run: gradle assembleDebug --no-daemon
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: iman-apk
-          path: project/app/build/outputs/apk/debug/app-debug.apk
+## ملاحظات
+- التطبيق يعمل بدون إنترنت، وبياناتك تُحفظ داخل التطبيق على الجهاز.
+- الخط الأميري يحتاج إنترنت مرة واحدة، وبدونه يُستخدم خط النظام.
+- زر تحديد الموقع (GPS) في الإعدادات يطلب إذن الموقع مرة واحدة.
